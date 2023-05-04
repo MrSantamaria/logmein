@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	err := login_window()
+	err := LoginWindow()
 	if err != nil {
 		log.Fatal(err)
 	}
