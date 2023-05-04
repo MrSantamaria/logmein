@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 
+	"github.com/MrSantamaria/logmein/utils"
 	"github.com/andlabs/ui"
 )
 
@@ -27,8 +28,14 @@ func LoginWindow() (string, string, error) {
 		window.SetChild(form)
 
 		loginButton.OnClicked(func(*ui.Button) {
-			username = usernameTextField.Text()
-			password = passwordTextField.Text()
+			err := utils.Retry(3, func() error {
+				_, err := getUserInput(window, usernameTextField, "Username")
+				return err
+			})
+			if err != nil {
+				fmt.Errorf("error getting user input for username: %v", err)
+			}
+			getUserInput(window, passwordTextField, "Password")
 			window.Destroy()
 		})
 
@@ -37,8 +44,11 @@ func LoginWindow() (string, string, error) {
 			return true
 		})
 
-		window.Show()
+		window.SetMargined(true)
 
+		// TODO: Center window on screen
+
+		window.Show()
 	})
 
 	if err != nil {
@@ -46,4 +56,16 @@ func LoginWindow() (string, string, error) {
 	}
 
 	return username, password, nil
+}
+
+func getUserInput(window *ui.Window, field *ui.Entry, fieldName string) (string, error) {
+	for {
+		if field.Text() == "" {
+			ui.MsgBoxError(window, "Error", fmt.Sprintf("%s is required.", fieldName))
+			break
+		}
+		return field.Text(), nil
+	}
+
+	return "", fmt.Errorf("error getting user input for %s", fieldName)
 }

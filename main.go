@@ -3,12 +3,12 @@ package main
 import (
 	"log"
 
-	_ "github.com/MrSantamaria/logmein/ui"
+	"github.com/MrSantamaria/logmein/ui"
 )
 
 func main() {
 
-	err := LoginWindow()
+	_, _, err := ui.LoginWindow()
 	if err != nil {
 		log.Fatal(err)
 	}
